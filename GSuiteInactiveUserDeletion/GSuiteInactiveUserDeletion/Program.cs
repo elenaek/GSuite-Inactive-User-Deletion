@@ -17,8 +17,12 @@ namespace GSuiteInactiveUserDeletion
     {
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/admin-directory_v1-dotnet-quickstart.json
-        static string[] Scopes = { DirectoryService.Scope.AdminDirectoryUserReadonly };
-        static string ApplicationName = "Directory API .NET Quickstart";
+        static string[] Scopes = { DirectoryService.Scope.AdminDirectoryUserReadonly,
+            DirectoryService.Scope.AdminDirectoryRolemanagementReadonly,
+            DirectoryService.Scope.AdminDirectoryGroupReadonly,
+            };
+        static string ApplicationName = "GSuite User Management";
+        static string apiKey = "";
 
         static void Main(string[] args)
         {
@@ -29,7 +33,7 @@ namespace GSuiteInactiveUserDeletion
             {
                 string credPath = System.Environment.GetFolderPath(
                     System.Environment.SpecialFolder.Personal);
-                credPath = Path.Combine(credPath, ".credentials/admin-directory_v1-dotnet-quickstart.json");
+                credPath = Path.Combine(credPath, ".credentials/GSuite-User-Management.json");
 
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.Load(stream).Secrets,
@@ -45,6 +49,7 @@ namespace GSuiteInactiveUserDeletion
             {
                 HttpClientInitializer = credential,
                 ApplicationName = ApplicationName,
+                //ApiKey = 
             });
 
             // Define parameters of request.
@@ -53,16 +58,34 @@ namespace GSuiteInactiveUserDeletion
             request.MaxResults = 100;
             request.OrderBy = UsersResource.ListRequest.OrderByEnum.Email;
 
+           
+
             // List users.
             IList<User> users = request.Execute().UsersValue;
-            Console.WriteLine("Users:");
             if (users != null && users.Count > 0)
             {
                 foreach (var userItem in users)
                 {
-                    Console.WriteLine("{0} ({1})", userItem.PrimaryEmail,
-                        userItem.Name.FullName);
+                    if (DateTime.Compare(userItem.LastLoginTime ?? DateTime.Now, DateTime.Now.AddMonths(-2)) < 0)
+                    {
+                        //Send SMTP Warning that account will be deleted
+                        Console.WriteLine($"{userItem.PrimaryEmail}");
+
+                        GroupsResource.ListRequest userGroupsRequest = service.Groups.List();
+                        userGroupsRequest.UserKey = userItem.Id;
+                        var userGroups = userGroupsRequest.Execute().GroupsValue;
+
+                        if (userGroups != null)
+                        {
+                            foreach (var group in userGroups)
+                            {
+                                Console.WriteLine($"{group.Name}");
+                            }
+                        }
+                    }
+                    
                 }
+                
             }
             else
             {
