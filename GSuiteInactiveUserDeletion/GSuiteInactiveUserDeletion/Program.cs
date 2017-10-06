@@ -45,7 +45,6 @@ namespace GSuiteInactiveUserDeletion
             {
                 HttpClientInitializer = credential,
                 ApplicationName = ApplicationName,
-                
             });
 
             // Define parameters of request.
@@ -53,8 +52,6 @@ namespace GSuiteInactiveUserDeletion
             request.Customer = "my_customer";
             request.MaxResults = 100;
             request.OrderBy = UsersResource.ListRequest.OrderByEnum.Email;
-
-            
 
             // List users.
             IList<User> users = request.Execute().UsersValue;
@@ -65,7 +62,6 @@ namespace GSuiteInactiveUserDeletion
                 {
                     Console.WriteLine("{0} ({1})", userItem.PrimaryEmail,
                         userItem.Name.FullName);
-                    
                 }
             }
             else
