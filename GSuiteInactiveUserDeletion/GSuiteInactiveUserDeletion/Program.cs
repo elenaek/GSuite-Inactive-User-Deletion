@@ -18,7 +18,6 @@ namespace GSuiteInactiveUserDeletion
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/admin-directory_v1-dotnet-quickstart.json
         static string[] Scopes = { DirectoryService.Scope.AdminDirectoryUserReadonly,
-            DirectoryService.Scope.AdminDirectoryRolemanagementReadonly,
             DirectoryService.Scope.AdminDirectoryGroupReadonly,
             };
         static string ApplicationName = "GSuite User Management";
