@@ -69,7 +69,7 @@ namespace GSuiteInactiveUserDeletion
                     if (DateTime.Compare(userItem.LastLoginTime ?? DateTime.Now, DateTime.Now.AddMonths(-2)) < 0)
                     {
                         //Send SMTP Warning that account will be deleted
-                        Console.WriteLine($"{userItem.PrimaryEmail}");
+                        //Console.WriteLine($"{userItem.PrimaryEmail}");
 
                         GroupsResource.ListRequest userGroupsRequest = service.Groups.List();
                         userGroupsRequest.UserKey = userItem.Id;
@@ -79,7 +79,11 @@ namespace GSuiteInactiveUserDeletion
                         {
                             foreach (var group in userGroups)
                             {
-                                Console.WriteLine($"{group.Name}");
+                                if (group.Name == "NoAutoDelete")
+                                {
+                                    Console.WriteLine(userItem.PrimaryEmail);
+                                }
+                                //Console.WriteLine($"{group.Name}");
                             }
                         }
                     }
